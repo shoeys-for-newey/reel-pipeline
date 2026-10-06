@@ -1,0 +1,19 @@
+# Footage and intermediates never leave this machine.
+inbox/*
+work/*
+exports/*
+!inbox/.gitkeep
+!work/.gitkeep
+!exports/.gitkeep
+
+# Brand assets are per-account: supply your own assets/logo.png (see README).
+assets/*
+!assets/.gitkeep
+
+# Local state
+.claude/hooks/.last_verify
+.claude/settings.local.json
+.remember/
+*.log
+__pycache__/
+*.pyc

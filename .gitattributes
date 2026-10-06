@@ -1,0 +1,10 @@
+# Scripts must stay LF: bash on macOS/Linux chokes on CRLF. Normalize everything text to LF.
+* text=auto eol=lf
+*.sh text eol=lf
+*.py text eol=lf
+*.png binary
+*.jpg binary
+*.mov binary
+*.mp4 binary
+*.MP4 binary
+*.MOV binary

@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ffmpeg:*)",
+      "Bash(ffprobe:*)",
+      "Bash(python .claude/skills/*)",
+      "Bash(python3 .claude/skills/*)",
+      "Bash(.claude/skills/*)"
+    ],
+    "deny": [
+      "Bash(rm -rf inbox*)",
+      "Edit(inbox/**)",
+      "Write(inbox/**)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/verify_exports.sh",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}

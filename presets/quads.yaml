@@ -1,0 +1,113 @@
+# Per-quad presets. Fill in the ??? fields as each quad gets its first reel.
+# osd_name  : craft name as it appears top-left in the DVR OSD (used to identify files)
+# sources   : which recordings exist for this quad; first listed is the hero.
+#             dvr = analog goggle DVR, hd = RunCam Thumb, ctrl = controller cam (GoPro),
+#             o4 = DJI O4 onboard recording. Treat o4 as hd: no grade, probe aspect on
+#             the first file. djgyrofix is for Gyroflow only; framing never needs it.
+# dvr_aspect: display aspect of the goggle DVR file (ffprobe display_aspect_ratio)
+# grade     : preset name in reel-frame/scripts/frame.sh (none | c03)
+# osd_cols  : column range on the 30-col Betaflight analog grid that survives the hero crop
+# template  : hero60 (single source) | three (HD + controller cam + DVR PiP)
+
+air65:
+  osd_name: "AIR65 C"
+  camera: "BetaFPV C03 (no menu; grade in post only)"
+  sources: [dvr, ctrl]       # ctrl = chest GoPro. Standing sets: B-roll only (framing rarely holds the radio). SEATED sets (2026-10-04, radio on the lap): it holds the radio -> template fullctrl
+  dvr_aspect: "3:2"          # 720x480, SAR 1:1, MJPEG 60 fps. PCM track is the VTX audio channel, 65% clipped 0-500 Hz wall, NOT a mic: audio sync impossible (sync.py conf 1.1-1.2 = noise)
+  grade: c03
+  osd_cols: "6-24"           # only relevant to hero60; full keeps all 30
+  template: full             # the pilot's call 2026-09-09: 100% FOV, panel centered in hero band, blur fill. fullctrl (same panel + GoPro sticks panel) when the chest cam holds the radio (first: 2026-10-04)
+  notes: "1S. Flights are short; expect 8 to 15 s of usable action per pack. End on the STATS screen or the grass. Chest-GoPro B-roll segments render as hero60 --grade none; pre-cut them with a 2 s decode run-up (GoPro hero input smears on input-seek). This GoPro set has no rotation tag; no flip. 2026-10-01 city set (air65_20261001, 6 segs, 44.0 s, all analog): overcast day raw panel YAVG 77-80 / SATAVG 8-11; c03 alone lands YAVG 95-99 / SAT 8.5-12 (spread 4 luma, no per-segment eq trims needed); finishing pass eq=saturation=1.1 + shared curve 0/0 0.28/0.26 0.72/0.74 1/1 -> 94-98 / 10.5-15. Daytime analog on this cam drops chroma for single frames every 5-10 frames (SATAVG 0): scan per-frame SATAVG at every cut-in (ffmpeg -ss S -t 0.12 signalstats) and nudge the start a frame or two so the first frame of a segment is not mono — the 44.00 opener landed on one. 2026-10-04 seated set (air65_20261004, fullctrl, 6 segs 23.2 s, VID00055/56 + GX010092/93 in D:/drone videos/2026.10.04): CTRL SYNC = LIFTOFF in the chest GoPro: the quad is visible leaving the pavement at the pilot's feet while the motor whine starts (GX010092 39.75-40.07 vs DVR throttle-up 4.1 read off the voltage sag) - at takeoff no other whoop is there. Offsets GoPro = DVR + 35.6 (pack 1) / + 51.8 (pack 2; landing tumble at the pilot's feet, whine end + impact clicks + their hand reaching down 0.2 s after STATS). WRONG FIRST ANSWER 39.1 on pack 1 shipped in v1-v3: a whine spool-down 3.5 s after the pilot's disarm was ANOTHER whoop near the group and the pilot's arm swing after disarm looked like a reach; the pilot (who flew it: landed AND disarmed in a buddy's hands) caught it from the panel. Never anchor on a whine tail unless the quad is visible in the chest cam at that moment, and when the pilot says the panel is wrong, re-measure from scratch. GoPro -180 tag, seated with the radio on the lap: --ctrl-flip --ctrl-y 0 --ctrl-zoom 1.32 = viewer-holding (radio low in the 715 px gapless sticks panel, railing/street at the top). v1 had a 216 px blur strip between the panels; pilot: close it, zoom the GoPro rather than show torso. Grade: raw panel YAVG 70-102 (sun out on pack 1, canopy shade 70 on pack 2), c03 -> 88-118, trims -0.016/-0.024/-0.045/+0.031/+0.06/+0.024 + eq saturation 1.1 + curve 0/0 0.28/0.26 0.72/0.74 1/1 -> 96.6-104.6 (the curve costs 3-5 luma on sub-100 segments, so positive trims need ~+0.02 more than the arithmetic). Rendered-segment first-frame SATAVG check caught one REAL mono cut-in (raw 15.700); nudged 2 frames. 2026-10-05 card 101DSCIM (VID00001/02, indoor venue, whole files framed to VIDxxxxx_reel.mp4 next to the sources on the card at the pilot's ask, not via exports/): DIFFERENT GOGGLE DVR - 1280x720 16:9 MJPEG 28.9 fps, OSD grid fills the full width; full panel = 1080x608 at y 541. Raw well exposed (flying YAVG med 109 / 100, SATAVG 16 / 10.5): c03 gamma 1.25 overshoots to 126 / 117, so graded --grade chroma --post eq=saturation=1.54:contrast=1.03 + curve 0/0 0.28/0.26 0.72/0.74 1/1 (brightness -0.016 on VID00001 only) -> rendered panel 105 / 100, SAT 20 / 13. RULE: raw panel YAVG over ~95 -> skip the c03 gamma lift, keep the x1.4 chroma in --post. VID00001 has no video until 13.3 s (static)."
+
+mb3:
+  osd_name: "MB304"          # OSD top-left reads SHOEYS / MB304 (goggle DVR of the O4 feed). Mapped to this key by name 2026-10-04 - confirm with the pilot
+  camera: "DJI O4 4K air unit (the unit whdoop flew until 2026-09-30): onboard 3840x2160 59.94 H.264 8-bit 16:9, embedded gyro (wm169, 1978 Hz stored / 989 Hz real)"
+  sources: [o4, dvr]         # hero = O4 onboard; dvr = goggle DVR 1920x1080 60 fps H.264 with OSD. NO audio on either. No GoPro yet - add ctrl when one rides along.
+  hd_aspect: "16:9"
+  dvr_aspect: "16:9"
+  grade: none
+  osd_cols: "n/a"
+  template: two              # O4 hero + goggle DVR as the bottom panel (--ctrl DVR.MOV --ctrl-start S+0.51 --ctrl-y 0, no flip); same as whdoop without GoPro. OSD name/battery/ALT/timer stay legible, bottom OSD row crops off.
+  notes: "6S (24.5 V fresh), ~105 s packs. First set 2026-10-03, riverfront: island -> power station -> skyline -> bird chase -> hand catch (mb304_20261003, 27.1 s). Sync: DVR leads onboard 0.51 s (lagfit 0.995-0.999 at t=1/35/99, flat); visync on 360p proxies only conf 1.19, always confirm with lagfit. GYRO IS THE PROBLEM ON THIS FRAME: djgyrofix scan (balanced) flags only the landing impact but reports a 195 deg/s residual floor over 100% of the clip (resonating IMU - soft-mount / props / tune, not metadata); aggressive adds five sub-0.2 s jitter blips. Gyroflow default render made shake WORSE: shakescore cruise 0.15 raw -> 6.17 px stab, skyline 0.47 -> 3.60, bird chase 3.40 -> 6.81. Gyro low-pass (gyro_source.lpf in a .gyroflow project; preset/trim recipe in work/er1003) only halves it: 30 Hz 3.64, 50 Hz 4.73, 100 Hz 6.14 px on the cruise. Raw onboard is already smooth (0.15 px) so the first reel shipped UNSTABILIZED raw hero; lpf30 render kept in work/er1003 for A/B. Re-test after the pilot changes the mount. Day grade: raw hero band YAVG 118-125 (sun pass 138) / SATAVG 10-12 (brick plant 21); finishing eq=saturation=1.1 + curve 0/0 0.28/0.26 0.72/0.74 1/1, sun pass eq brightness -0.045. Bird chase moment: DVR 1:10.0-1:11.2 (gull crosses the centered hero crop at hero 70.25), quad dives after it into the sun glare."
+
+seeker3:
+  osd_name: "???"
+  camera: "???"
+  sources: [hd, dvr]
+  hd_aspect: "???"
+  dvr_aspect: "???"
+  grade: none
+  osd_cols: "???"
+  template: hero60           # switch to three when controller cam is present
+
+screamer:
+  osd_name: "???"
+  camera: "???"
+  sources: [dvr]
+  dvr_aspect: "???"
+  grade: none                # set after first measured clip
+  osd_cols: "???"
+  template: hero60
+
+r5l:
+  osd_name: "R5L"            # OSD top-left reads R5L / SHOEYS (goggle DVR of the analog feed)
+  camera: "analog, PAL: goggle DVR is 720x576 50 fps MJPEG (5:4), PCM audio. Daylight raw YAVG 103-113 / SATAVG 24-32 (2026-10-02 maiden) - well exposed, no tonal grade needed"
+  sources: [dvr]             # only the goggle DVR so far (Thumb/hd never recorded on this airframe yet). Add hd when a Thumb rides along.
+  dvr_aspect: "5:4"          # 720x576, SAR 1:1
+  grade: chroma              # chroma NR only; tonal work in --post (measured)
+  osd_cols: "n/a"            # template full keeps all 30; hero60 on this 5:4 feed cuts SHOEYS to EYS and the battery column mid-digit (tested 2026-10-02)
+  template: full             # 100% FOV panel 1080x864 centered in the hero band; OSD + props intact
+  notes: "6S 5in freestyle. Rekon 5 Lite hardware on a Grinderino frame since 2026-10-02 (maiden 2026-10-02: VID00052/53 in inbox/grinderino, 6:38 + 5:12 flights). Inverted-moment finder: .claude/skills/reel-shotlist/scripts/invertscan.py (top vs bottom band B-G on the 360p proxy) lists every roll/loop apex; cross-check with 0.25 s sheets, the apexes with the skyline upside down are the money frames. Analog breakup bursts of 0.5-1.5 s sit between tricks (static bands, full mono frames); scout cut-ins at 0.25 s. signalstats on a raw-MJPEG input seek ALWAYS reports the first decoded frame as SATAVG 0 - measurement artifact, the rendered segment's first frame is fine (30.6 measured); judge mono cut-ins on the rendered segment, not the raw seek. Finishing 2026-10-02: per-seg spread 103-110 YAVG raw, trims only on the two low segs (eq brightness 0.024 / 0.016), shared curve 0/0 0.28/0.26 0.72/0.74 1/1 + saturation 1.05. Flight ends with a landing at the pilot's feet then the STATS page within 0.3 s - end the reel on the STATS flash."
+
+cinebot30:
+  osd_name: "CINEBOT30"
+  camera: "Caddx Ratel 2, factory PAL: DVR is 720x576 50fps HEVC (5:4). If the pilot switches it to NTSC, DVR becomes 720x480 59.94 - change dvr_aspect to 3:2 then. DVR audio is a clipped motor wall - useless for sync"
+  sources: [hd, dvr, ctrl]   # hero = RunCam Thumb 2, 4K60 16:9, Gyroflow-stabilized before inbox
+  hd_aspect: "16:9"
+  dvr_aspect: "5:4"          # 720x576, SAR 1:1
+  grade: none                # confirmed 2026-09-08: ungraded PiP reads fine at 230px, already saturated
+  osd_cols: "???"            # only matters if the DVR ever heroes
+  template: three            # use hero+ctrl (no PiP) for flights without DVR
+  notes: "6S. GoPro chest cam writes a bogus -180 rotation tag: use --ctrl-flip; --ctrl-y 240 lands the radio in the panel. Sync: visync.py for DVR then CONFIRM with lagfit.py (composition matching across the FOV gap misleads by ~1s); GoPro offsets MUST be confirmed with disarm-edge/punch anchors (reel-sync SKILL) — an unconfirmed onset_sync peak was 70s wrong on 0018; plain audio sync fails in wind. No DVR clock drift (lagfit-verified flat on 0019). Shotlist on 360px work/ proxies with --fps 5 --dead-ydif 3 --static-ydif 60. three template validated 2026-09-08 (0019 farm reel); render with --dvr-y 170 for IG."
+
+whdoop:
+  osd_name: "WHDOOP"         # OSD top-left reads SHOEYS / WHDOOP (goggle DVR of the O4 feed)
+  camera: "DJI O4 wide + MP66 gyro since 2026-09-30 (was DJI O4 4K unit). Onboard = 1080p59.94 HEVC Main10 (yuv420p10le) 16:9"
+  sources: [o4, dvr, ctrl]   # hero = O4 onboard (1080p59.94 10-bit since 2026-09-30; 4K59.94 on the older unit); dvr = goggle DVR 1080p60 with OSD; ctrl = chest GoPro 4:3 29.97 (present on outings, not home launches)
+  hd_aspect: "16:9"          # 1920x1080 on the O4 wide unit (3840x2160 on the old 4K unit)
+  dvr_aspect: "16:9"
+  grade: none
+  osd_cols: "n/a"            # OSD only on the goggle DVR; onboard hero is clean
+  template: three             # with GoPro: hero + ctrl + DVR PiP (--dvr-h 300, the pilot's call 2026-09-12: the first series' 230 PiP felt small). Without GoPro: two (goggle DVR as bottom panel, --ctrl-y 0, 2026-09-12 city story)
+  notes: "2S 85mm LR whoop. No audio on O4 onboard OR goggle DVR: audio sync impossible, use visync + lagfit (same-airframe, peaks 0.9+ at takeoff/landing steps). DVR leads onboard by ~0.5-0.7s (0.53/0.70/0.47 on three flights, flat within each). ctrl panel CONVENTION (pilot 2026-09-19, supersedes 2026-09-12 pilot-POV): VIEWER-HOLDING — controller at panel bottom, antenna up, "the viewer is holding the controller". For a no-tag chest GoPro (2026-09-19 set) that means NO --ctrl-flip and crop from the frame BOTTOM: --ctrl-y 311 (the max for 4:3->1080x810). Sets whose stored orientation is already antenna-down still need the flip to land antenna-up; extract a still and orient until the antenna points up. ctrl sync: no hero audio, so anchor GoPro audio punch edge + VISUAL liftoff (quad LED visible on chest cam) — pre-flight unpacking makes loud false spikes, eyeball the ctrl frame at any candidate (2026-09-12: three false candidates before the real punch at gp 59.6). --ctrl-y 200 lands radio+hands centered (2026-09-12 mount). Mount angle shifts per outing: 2026-09-19 set needed --ctrl-y 0 (radio at top edge of the flipped frame) - preview the exact panel crop (scale=1080:-2,rotate=PI,crop=1080:499:0:Y) before rendering each new GoPro set. Gyro-surgeon before Gyroflow: djgyrofix scan; this unit CAN throw 7-9s long jitter bursts (night dive 0004) -> surgical-hybrid playbook, verify with twitchmap. Scan windows can CONTAIN real tricks — extract the gyro CSV and split ring (high RMS, near-zero mean) from real rotation (sustained means) before bridging (2026-09-15: pinnacle backflip 27.8-28.4 sat inside the flagged 24.1-28.4 'jitter' event; auto bounds would have bridged the flip away — bridged the pure-ring 17.76-26.95 instead, twitch median 0.29px). NEVER bridge mixed windows: bridging the flip windup 26.95-27.7 (real buffet + ring) made shake WORSE (1.41 -> 4.98 px, raw buffet rendered uncorrected); the fix for mixed residual is `fix --apply --sensitivity 1.3` on the bridged file (windup 1.41 -> 1.14, near the real-buffet floor). 2026-09-19: bounded SMOOTHING corrupts mixed windows too, not just bridging - Z-ring events flagged inside power-loop pull-ups, smoothed at default and worse at 1.3, leaked the pitch input into stabilization (pilot: "pulling back on the stick translated into the stabilization"; 3/4 skylight passes). Remedy: `fix -apply -ranges "<pure events only>"` leaving trick windows on raw gyro - tight-window shakescore dropped 16.2->14.5 / 19.4->16.0 / 4.6->2.6 px, cruise unchanged. Rule: an event overlapping a deliberate rotation gets NO correction — promoted to ALL O4/O4 Pro quads (pilot 2026-09-19, see CLAUDE.md workflow step 2; O4 Pro slightly better behaved but same failure mode); sensitivity 1.3 remains right for pure-ring windows away from tricks (flip 67.8 on 0009 came out clean with it). DVR as two-template bottom panel keeps craft name + battery + ALT + fly timer readable at --ctrl-y 0; bottom OSD row (RC/bitrate/goggle %) crops off, acceptable. At --dvr-h 300 PiP the battery/ALT/timer OSD is legible too. Home launches exit/return through the apartment window: shotlist brightness column finds the indoor bounds (see reel-shotlist SKILL). O4 WIDE UNIT (2026-09-30 night dive, 0010/0011): 10-bit HEVC source - Gyroflow's default H.264 NVENC render fails ('Pixel format YUV420P10LE is not supported'); render with -p {codec: H.265/HEVC, use_gpu: true, audio: false, bitrate: 60} as a quoted JSON-ish string (exact flag in work/nd2_sync.md) (~1 min per clip at 1080p, output stays 1920x1080 10-bit, frame count preserved). Auto lens profile = DJI O4 built-in, zero gyro offset. Gyro is CLEAN on this unit: djgyrofix scan found only a pre-takeoff blip and the landing impact, twitchmap on the stab renders medians 0.18-0.22 px with hotspots only at deliberate tricks - no ring bursts, no surgical playbook needed. shakescore raw->stab: bus pass 1.78->1.02, dive 2.40->1.89 px. DVR-leads-onboard offset 0.55 s on both flights (lagfit peaks 0.94-0.997). Night grade: keep the night — small gamma lifts (1.05-1.12) on dark segs toward the reel median, shared gentle lift curve 0/0 0.12/0.13 0.55/0.58 1/1, never equalize lit-street segs down."
+
+shoeycat:
+  osd_name: "Shoeycat"       # blackletter OSD font; truncated/stylized in stills, reads like "Shoey" (pilot confirmed shoeycat 2026-09-17)
+  camera: "???"              # analog. c03 grade NOT validated for this cam; night set graded with chroma + measured --post
+  sources: [dvr]             # goggle DVR 720x480 3:2 MJPEG 59.94, PCM audio
+  dvr_aspect: "3:2"
+  grade: chroma              # chroma NR only; tonal work per-reel in --post (measure first)
+  osd_cols: "n/a"            # template full keeps all 30
+  template: full
+  notes: "1S night street whoop. First set 2026-09-17 (VID00096-99, shoeycat_night_whoop): 73-85 s per pack, tricks land in the last-half voltage sag, so OSD low battery / land now warnings flicker under punch from ~3.5V - part of the look, don't cut around them. Analog polarization dips go monochrome ~0.5 s at flip/loop apexes; keep them. Night panel YAVG ran 62-76 ungraded across one outing."
+
+shrike:
+  osd_name: "???"
+  camera: "???"
+  sources: [dvr]             # confirm on first footage; add o4/hd/ctrl if they exist
+  dvr_aspect: "???"
+  grade: none                # set after first measured clip
+  osd_cols: "???"
+  template: hero60
+  notes: "4S 2in, 1404 4860KV. Maiden 2026-08-30."
+
+atlas4:
+  osd_name: "ATLAS 4"        # OSD top-left reads ATLAS 4 / SHOEYS (goggle DVR of the O4 Pro feed)
+  camera: "DJI O4 Pro (installed 2026-09-08)"
+  sources: [o4, dvr, ctrl]   # dvr = goggle DVR 1080p60 16:9 that PILLARBOXES the 4:3 feed; OSD lives in the side pillars (craft name left, battery/ALT/timer right). Keep the full 16:9 frame in the PiP - cropping the pillars loses the OSD. ctrl = chest GoPro 4:3 29.97 on outings (first: 2026-09-21).
+  hd_aspect: "4:3"           # 2688x2016 @ 59.94, H.264. No grade, no OSD. .LRF sidecars (960x720 29.97) are timeline-exact proxies - use them for contact sheets and shotlist/visync proxies instead of decoding 4K.
+  dvr_aspect: "16:9"
+  grade: none
+  osd_cols: "n/a"
+  template: pip              # hero60 + DVR PiP top-right (--dvr-y 170 --dvr-h 300), validated 2026-09-14 (atlas4_park_dusk). With chest GoPro: three, same PiP flags (validated 2026-09-21 atlas4_20260921). No audio on o4 OR dvr: sync via lagfit (visync first pass agrees ~0.1s); DVR led onboard 1.21s on the first flight, 0.87s on the 2026-09-21 flight - same lead pattern as whdoop, measure per flight. Center lagfit's DVR window at t0h + expected offset or it clamps at +/-3s.
+  notes: "6S 4in LR cruiser, 1804 2450KV. Long flights; expect several usable windows per pack. O4 Pro splits recordings at ~3589 MB; segments butt-join exactly (copy-concat with a Windows-path list file) BUT measure each part's DVR offset separately - the 2026-09-13 join was 0.13s off the derived value. First set 2026-09-09: 0004+0005+0006 = one 9:04 flight. Gyro: 2026-09-13 scan was clean on part 1, two sub-0.5s jitter events on part 2 - scan every file, fix --out to work/, skip Gyroflow input fixing when the scan is clean. Mixed-window rule applies (CLAUDE.md step 2): no correction inside deliberate-rotation windows. Gyroflow render of the 4:3 o4 comes out 2688x1512 16:9 (lens-profile crop): hero keeps 53% width not 70 - tile-check off-center subjects. ctrl 2026-09-19+ set (GX010086) carries a -180 tag: viewer-holding = --ctrl-flip --ctrl-y 311 (OPPOSITE flags to the tagless whdoop 2026-09-19 files, same physical mount - preview per set). ctrl sync when GoPro rolls before arm: DVR OSD fly-timer zero pins arm in hero time (timer starts at arm, ticks on the second), then match the arm idle-plateau onset in GoPro band-passed audio; landing can be a MID-AIR DISARM (hero file ends with quad still airborne) so the disarm audio edge may not exist - the 2026-09-21 offset -68.2 came from arm chain + landing visual, +/-0.3."
